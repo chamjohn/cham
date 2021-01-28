@@ -18,17 +18,16 @@ module.exports = async function (deployer, network, accounts) {
     
     if (network == "main_fork") {
         deployedConfig = deployedConfig["mainnet"]
-        config = config[network]
         // deploy CErc20Delegate
         let cerc20Admin = accounts[0];
         await deployer.deploy(CErc20Delegate, {from: cerc20Admin});
-        config[CERC20_DELEGATE] = CErc20Delegate.address
+        config[network][CERC20_DELEGATE] = CErc20Delegate.address
         
         // deploy usdt through CErc20Delegator
         await deployer.deploy(CErc20Delegator, 
             deployedConfig.usdt,
-            config.unitroller,
-            config.usdt_interest_rate_model.address,
+            config[network].unitroller,
+            config[network].usdt_interest_rate_model.address,
             deployedConfig.cusdt.initial_exchange_rate_mantissa,
             deployedConfig.cusdt.name,
             deployedConfig.cusdt.symbol,
@@ -36,7 +35,7 @@ module.exports = async function (deployer, network, accounts) {
             cerc20Admin,
             CErc20Delegate.address,
             '0x0', {from: cerc20Admin});
-        config[CERC20_DELEGATOR_USDT] = CErc20Delegator.address
+        config[network][CERC20_DELEGATOR_USDT] = CErc20Delegator.address
 
         // save config
         utils.writeContractAddresses(config);

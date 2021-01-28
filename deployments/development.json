@@ -1,14 +1,16 @@
 {
-    "oracle": "0x6b2bC24DFd3F34f9F521e851c6448Ee6fbC32A10",
-    "unitroller": "0xa8Fcf13BB1434ac9B0015FD90ba9fD2d7E805C70",
-    "controller": "0x2dC43502484A3234369D0b44D6dc78Ed6CF1835D",
-    "usdt_interest_rate_model": {
-        "address": "0x67fB3f3d39F6d3d29E7eca551A78888B1841Ac62",
-        "base_rate": "20000000000000000",
-        "jump": "2000000000000000000",
-        "kink": "900000000000000000",
-        "owner": "0xb85BD140f59a4A6073eA78cB9F019d8fCC0aeCc4"
-    },
-    "cerc20_delegate": "0xc236F0DC0961f9F1f40E5C2c28c4c9165a0879ca",
-    "cerc20_delegator_usdt": "0xA396d3ba72d783443801463bECB18B0ccD22dc11"
+    "main_fork": {
+        "oracle": "0xDDbcDbce060170114CF37D22485fa532278a007C",
+        "unitroller": "0xeaBc17E442418142Bb2f1981111F2E43D919E508",
+        "controller": "0x0c4D54265Ceea01305982f9948f0CEc6EB9cA962",
+        "usdt_interest_rate_model": {
+            "address": "0xFbD09b6DC1fa6096915E58a5A418Fd7d5B50196b",
+            "base_rate": "20000000000000000",
+            "jump": "2000000000000000000",
+            "kink": "900000000000000000",
+            "owner": "0xf5983a450Ad10183233cedF02D3B78484b399119"
+        },
+        "cerc20_delegate": "0xa3cdEf126636820F26F503f47dcD069a459459C3",
+        "cerc20_delegator_usdt": "0x9875f0c6B23b1e45f6a71c1E31b11c9862CB783b"
+    }
 }
