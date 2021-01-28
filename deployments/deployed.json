@@ -1,3 +1,33 @@
 {
-    
+    "mainnet":{
+        "usdt": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+        "usdc": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "weth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "wbtc": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+        "sushi_factory": "0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac",
+        "usd_per_eth": "0x9326BFA02ADD2366b30bacB125260Af641031331",
+        "eth_per_usdt": "0xEe9F2375b4bdF6387aa8265dD4FB8F16512A1d46",
+        "eth_per_dai": "0x773616E4d11A78F511299002da57A0a94577F1f4",
+        "eth_per_btc": "0xdeb288F737066589598e9214E782fa5A8eD689e8",
+        "eth_per_sushi": "0xe572CeF69f43c2E488b33924AF04BDacE19079cf",
+        "eth_per_susd": "0xe572CeF69f43c2E488b33924AF04BDacE19079cf",
+        "eth_per_aave": "0x6Df09E975c830ECae5bd4eD9d90f3A95a4f88012",
+        "eth_per_ant": "0x8f83670260F8f7708143b836a2a6F11eF0aBac01",
+        "eth_per_bal": "0xC1438AA3823A6Ba0C159CfA8D98dF5A994bA120b",
+        "eth_per_bat": "0x0d16d4528239e9ee52fa531af613AcdB23D88c94",
+        "eth_per_bnb": "0x14e613AC84a31f709eadbdF89C6CC390fDc9540A",
+        "usdt_interest_rate_model":{
+            "base_rate": "20000000000000000",
+            "multiplier": "200000000000000000",
+            "jump": "2000000000000000000",
+            "kink": "900000000000000000"
+        },
+        "cusdt":{
+            "name": "Compound USDT",
+            "symbol": "cUSDT",
+            "decimals": 8,
+            "underlying": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+            "initial_exchange_rate_mantissa": "200000000000000"
+        }
+    }
 }

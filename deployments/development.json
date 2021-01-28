@@ -1,3 +1,14 @@
 {
-   
+    "oracle": "0x6b2bC24DFd3F34f9F521e851c6448Ee6fbC32A10",
+    "unitroller": "0xa8Fcf13BB1434ac9B0015FD90ba9fD2d7E805C70",
+    "controller": "0x2dC43502484A3234369D0b44D6dc78Ed6CF1835D",
+    "usdt_interest_rate_model": {
+        "address": "0x67fB3f3d39F6d3d29E7eca551A78888B1841Ac62",
+        "base_rate": "20000000000000000",
+        "jump": "2000000000000000000",
+        "kink": "900000000000000000",
+        "owner": "0xb85BD140f59a4A6073eA78cB9F019d8fCC0aeCc4"
+    },
+    "cerc20_delegate": "0xc236F0DC0961f9F1f40E5C2c28c4c9165a0879ca",
+    "cerc20_delegator_usdt": "0xA396d3ba72d783443801463bECB18B0ccD22dc11"
 }
