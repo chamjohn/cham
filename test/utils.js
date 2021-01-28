@@ -5,7 +5,7 @@ const CErc20 = artifacts.require("CErc20")
 const CErc20Delegate = artifacts.require("CErc20Delegate")
 const CErc20Delegator = artifacts.require("CErc20Delegator")
 const EIP20Interface = artifacts.require("EIP20Interface")
-
+const IUniswapV2Pair = artifacts.require("IUniswapV2Pair")
 
 const utils = require('../migrations/utils');
 const { time } = require('@openzeppelin/test-helpers');
@@ -15,26 +15,48 @@ async function getArtifacts(network) {
     let dnetwork;
     if (network == "main_fork") {
         dnetwork = "mainnet"
+        const config = utils.getContractAddresses();
+
+        const [oracle, controller, 
+            usdt, cusdt,
+            s_weth_usdt, cs_weth_usdt
+        ] = await Promise.all([
+            ChainlinkPriceOracleProxy.at(config[network].oracle),
+            ComptrollerG4.at(config[network].unitroller),
+            
+            EIP20Interface.at(dconfig[dnetwork].usdt),
+            CErc20Delegate.at(config[network].cerc20_delegator_usdt),
+
+            IUniswapV2Pair.at(dconfig[dnetwork].sushi_weth_usdt_pair),
+            CErc20Delegate.at(config[network].cerc20_delegator_sushi_weth_usdt)
+        ]);
+        res = {
+            dconfig,
+            config,
+            network,
+            dnetwork,
+
+            oracle,
+            controller,
+
+            usdt,
+            cusdt,
+
+            weth,
+            cweth,
+
+            s_weth_usdt,
+            cs_weth_usdt
+
+        }
+
+        return res;
     }
-
-    const config = utils.getContractAddresses();
-
-    const [oracle, controller, usdt, cusdt] = await Promise.all([
-        ChainlinkPriceOracleProxy.at(config[network].oracle),
-        ComptrollerG4.at(config[network].unitroller),
-        EIP20Interface.at(dconfig[dnetwork].usdt),
-        CErc20Delegate.at(config[network].cerc20_delegator_usdt)
-    ]);
-    res = {
-        oracle,
-        controller,
-        usdt,
-        cusdt
-    }
-
-    return res;
+    
 
 }
+
+
 
 // async function swapEthTo(to, amount, account) {
 //     const config = utils.getContractAddresses();

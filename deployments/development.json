@@ -1,16 +1,17 @@
 {
     "main_fork": {
-        "oracle": "0xDDbcDbce060170114CF37D22485fa532278a007C",
-        "unitroller": "0xeaBc17E442418142Bb2f1981111F2E43D919E508",
-        "controller": "0x0c4D54265Ceea01305982f9948f0CEc6EB9cA962",
+        "oracle": "0x799A451a1545fC58C3448abE944F6f57F459fDD7",
+        "unitroller": "0x94D480B45142958F6576e9F7a92eeDDf5c3e9888",
+        "controller": "0xeFF297dF8D1374776D73ae736a30Fbe49bAb35E8",
         "usdt_interest_rate_model": {
-            "address": "0xFbD09b6DC1fa6096915E58a5A418Fd7d5B50196b",
+            "address": "0x54C6e750f73334443c97A973c0DaEB558d1b016e",
             "base_rate": "20000000000000000",
             "jump": "2000000000000000000",
             "kink": "900000000000000000",
-            "owner": "0xf5983a450Ad10183233cedF02D3B78484b399119"
+            "owner": "0x27a5337f53c63CF5fF321dA6A30159E2C09e1a0a"
         },
-        "cerc20_delegate": "0xa3cdEf126636820F26F503f47dcD069a459459C3",
-        "cerc20_delegator_usdt": "0x9875f0c6B23b1e45f6a71c1E31b11c9862CB783b"
+        "cerc20_delegate": "0xaA3A74332cB2f1c8850E5B215D627380E31503f2",
+        "cerc20_delegator_usdt": "0x98D8C931D1482DCB05Fb4Dae1Df5d262721Fd3d2",
+        "cerc20_delegator_sushi_weth_usdt": "0xF356f07efE3dcC11F41C663Baf35a9018A62e1A6"
     }
 }

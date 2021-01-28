@@ -9,21 +9,20 @@ module.exports = async function (deployer, network, accounts) {
     let config = utils.getContractAddresses();
     
     if (network == "main_fork") {
-        deployedConfig = deployedConfig["mainnet"]
         // deploy usdt interest model
         let usdtInterestRateAdmin = accounts[0];
         await deployer.deploy(JumpRateModelV2,
-            deployedConfig.usdt_interest_rate_model.base_rate,
-            deployedConfig.usdt_interest_rate_model.multiplier,
-            deployedConfig.usdt_interest_rate_model.jump,
-            deployedConfig.usdt_interest_rate_model.kink,
+            deployedConfig.config.usdt_interest_rate_model.base_rate,
+            deployedConfig.config.usdt_interest_rate_model.multiplier,
+            deployedConfig.config.usdt_interest_rate_model.jump,
+            deployedConfig.config.usdt_interest_rate_model.kink,
             usdtInterestRateAdmin, 
             {from: usdtInterestRateAdmin});
         config[network]["usdt_interest_rate_model"] = {
             "address": JumpRateModelV2.address,
-            "base_rate": deployedConfig.usdt_interest_rate_model.base_rate,
-            "jump": deployedConfig.usdt_interest_rate_model.jump,
-            "kink": deployedConfig.usdt_interest_rate_model.kink,
+            "base_rate": deployedConfig.config.usdt_interest_rate_model.base_rate,
+            "jump": deployedConfig.config.usdt_interest_rate_model.jump,
+            "kink": deployedConfig.config.usdt_interest_rate_model.kink,
             "owner": usdtInterestRateAdmin
         }
 

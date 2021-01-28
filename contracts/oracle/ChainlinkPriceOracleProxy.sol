@@ -135,7 +135,7 @@ contract ChainlinkPriceOracleProxy is Ownable, PriceOracleInterface {
                 .chainlinkAggregatorAddress
         )
             .latestRoundData();
-
+   
         require(chainlinkPrice > 0, "Chainlink price feed invalid");
 
         uint256 underlyingPrice;
@@ -184,12 +184,15 @@ contract ChainlinkPriceOracleProxy is Ownable, PriceOracleInterface {
             uint256 root;
             {
             (uint112 reserve0, uint112 reserve1,) = pair.getReserves();
+            return 0;
             address token0 = pair.token0();
             address token1 = pair.token1();
             uint256 price0 = getTokenPrice(token0);
             uint256 price1 = getTokenPrice(token1);
+            
             root = Math.sqrt(price0).mul(Math.sqrt(price1)).mul(Math.sqrt(reserve0.mul(reserve1)));
             }
+            
             uint256 underlyingPrice = root.div(pair.totalSupply()).mul(2);
             require(underlyingPrice > 0, "Underlying price invalid");
             return underlyingPrice;

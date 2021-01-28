@@ -7,11 +7,10 @@ CONTROLLER = "controller"
 
 module.exports = async function (deployer, network, accounts) {
     console.log("3_deploy_controller.js, network: ", network)
-    let deployedConfig = utils.getConfigContractAddresses();
+    // let deployedConfig = utils.getConfigContractAddresses();
     let config = utils.getContractAddresses();
     
     if (network == "main_fork") {
-        deployedConfig = deployedConfig["mainnet"]
         // deploy Unitroller
         let uniAdmin = accounts[0];
         await deployer.deploy(Unitroller, {from: uniAdmin});
