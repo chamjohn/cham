@@ -1375,8 +1375,13 @@ contract ComptrollerG4 is ComptrollerV3Storage, ComptrollerInterface, Comptrolle
      * @notice Return the address of the COMP token
      * @return The address of COMP
      */
-    function getCompAddress() public pure returns (address) {
-        // TODO: change this
-        return 0xc00e94Cb662C3520282E6f5717214004A7f26888;
+    function getCompAddress() public view returns (address) {
+        return chamAddress;
+    }
+
+    function _setCompAddress(address addr) public {
+        require(msg.sender == admin, "only admin can set comp");
+        require(chamAddress == address(0), "can only be set once");
+        chamAddress = addr;
     }
 }

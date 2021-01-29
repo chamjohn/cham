@@ -1,18 +1,20 @@
 {
     "main_fork": {
-        "oracle": "0x2f1Bc6deb60967bBbAd4015A6Dfd596E1C616Dc3",
-        "unitroller": "0x9326AdAD76f3C9497EE4cDDCf97B01Eb25D56721",
-        "controller": "0xfbc2cC9106e331C90fF66e1c7220BEfc75E813F3",
+        "oracle": "0xC4055562Ca188e9fB78350255cFFe92a88000ee0",
+        "unitroller": "0xCfCfc9Ff3153Cd56011e1127Ea762b20892Ee5e0",
+        "controller": "0x0beceF4f36Dce0668d16a4AC411A5f4566a545f3",
         "usdt_interest_rate_model": {
-            "address": "0x14a83Be013F616BCD0123961d31A68b379F097d1",
+            "address": "0x2863A5868D6472Bd2cCa71cF664b6C8c5F506A8c",
             "base_rate": "20000000000000000",
             "jump": "2000000000000000000",
             "kink": "900000000000000000",
-            "owner": "0x5B99824F7EBE6473CA882F85CaD34397009f00Fb"
+            "owner": "0x7B6A2F92C1C9e3ACFdc6937672ABb7A971E0178b"
         },
-        "cerc20_delegate": "0xA1AE369b3AC4c0AEaf0df5004bd12202De89CCb3",
-        "cerc20_delegator_usdt": "0xaBDF217c26779379669dc288dfb1101D661b119f",
-        "cerc20_delegator_weth": "0x758DeBF778AFA15956D4b3ea218B861104051067",
-        "cerc20_delegator_sushi_weth_usdt": "0x94D958661CDF92787A70411C34aDB9791667F141"
+        "cerc20_delegate": "0xe31137246106E4532052c57EEFDb5c641CE890fE",
+        "cerc20_delegator_usdt": "0x23922E1B07A5C488a98f2C11AA3A3DF1Ec402361",
+        "cether": "0x919f8d99682b2C6A8DF86eeaB4297B63b38eD9e4",
+        "cerc20_delegator_sushi_weth_usdt": "0x7ceC741d870DE06b819643145596103750a58A68",
+        "cerc20_delegator_curve_renbtc_wbtc": "0x64E24aa55C5BB0FA4fd8F3251d407Eb092b3fd6C",
+        "comp": "0xB554A35Fc09Bd37ED122558917Cf9283e583F1A3"
     }
 }

@@ -7,6 +7,7 @@ import '../interfaces/IUniswapV2Pair.sol';
 import '../interfaces/EIP20Interface.sol';
 import "../interfaces/AggregatorV3Interface.sol";
 import "../interfaces/PriceOracleInterface.sol";
+import "../interfaces/ICurveFi.sol";
 
 // Source: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/GSN/Context.sol
 /*
@@ -113,11 +114,18 @@ contract ChainlinkPriceOracleProxy is Ownable, PriceOracleInterface {
 
     struct TokenConfig {
         address chainlinkAggregatorAddress;
-        uint256 chainlinkPriceBase; // 0: Invalid, 1: USD, 2: ETH, 3: LP
+        uint256 chainlinkPriceBase; // 0: Invalid, 1: USD, 2: ETH, 3: LP, 4: Curve LP
         uint256 underlyingTokenDecimals;
     }
 
+    struct CurveConfig {
+        address swapPool;
+        address poolToken;
+        address baseAsset;
+    }
+
     mapping(address => TokenConfig) public tokenConfig;
+    mapping(address => CurveConfig) public curveConfig;
 
     constructor(address ethUsdChainlinkAggregatorAddress_) public {
         ethUsdChainlinkAggregatorAddress = ethUsdChainlinkAggregatorAddress_;
@@ -196,6 +204,10 @@ contract ChainlinkPriceOracleProxy is Ownable, PriceOracleInterface {
             uint256 underlyingPrice = root.div(pair.totalSupply()).mul(2);
             require(underlyingPrice > 0, "Underlying price invalid");
             return underlyingPrice;
+        } else if (config.chainlinkPriceBase == 4) {
+            uint256 baseAssetPriceInUsd = getTokenPrice(curveConfig[cTokenAddress].baseAsset);
+            uint256 lpPriceInBase = ICurveFi(curveConfig[cTokenAddress].swapPool).get_virtual_price();
+            return baseAssetPriceInUsd.mul(lpPriceInBase).div(10 ** (36 - tokenConfig[curveConfig[cTokenAddress].baseAsset].underlyingTokenDecimals));
         } else {
             return getTokenPrice(cTokenAddress);
         }
@@ -235,7 +247,39 @@ contract ChainlinkPriceOracleProxy is Ownable, PriceOracleInterface {
             );
         }
     }
+    function setCurveConfigs(
+        address[] calldata cTokenAddress,
+        address[] calldata swapPools,
+        address[] calldata poolTokens,
+        address[] calldata baseAssets
+    ) external onlyOwner {
+        require(cTokenAddress.length == swapPools.length && 
+        cTokenAddress.length == poolTokens.length && 
+        cTokenAddress.length == baseAssets.length, "Arguments must have same length");
+        for (uint256 i = 0; i < cTokenAddress.length; i++) {
+            // legacy check
+            ICurveFi(swapPools[i]).get_virtual_price();
 
+            curveConfig[cTokenAddress[i]] = CurveConfig({
+                swapPool: swapPools[i],
+                poolToken: poolTokens[i],
+                baseAsset: baseAssets[i]
+            });
+            
+            emit CurveConfigUpdated(
+                cTokenAddress[i],
+                swapPools[i],
+                poolTokens[i],
+                baseAssets[i]
+            );
+        }
+    }
+    event CurveConfigUpdated(
+        address cTokenAddress,
+        address swapPool,
+        address poolToken,
+        address baseAsset
+    );
     event TokenConfigUpdated(
         address cTokenAddress,
         address chainlinkAggregatorAddress,

@@ -5,8 +5,10 @@
         "weth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
         "wbtc": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
         "sushi_factory": "0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac",
+        "sushi_router": "0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F",
         "sushi_weth_usdt_pair": "0x06da0fd433C1A5d7a4faa01111c044910A184553",
         "usd_per_eth": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
+        "usd_per_btc": "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c",
         "eth_per_usdt": "0xEe9F2375b4bdF6387aa8265dD4FB8F16512A1d46",
         "eth_per_dai": "0x773616E4d11A78F511299002da57A0a94577F1f4",
         "eth_per_btc": "0xdeb288F737066589598e9214E782fa5A8eD689e8",
@@ -16,7 +18,10 @@
         "eth_per_ant": "0x8f83670260F8f7708143b836a2a6F11eF0aBac01",
         "eth_per_bal": "0xC1438AA3823A6Ba0C159CfA8D98dF5A994bA120b",
         "eth_per_bat": "0x0d16d4528239e9ee52fa531af613AcdB23D88c94",
-        "eth_per_bnb": "0x14e613AC84a31f709eadbdF89C6CC390fDc9540A"
+        "eth_per_bnb": "0x14e613AC84a31f709eadbdF89C6CC390fDc9540A",
+        "curve_tri_pool": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
+        "curve_renbtc_wbtc_token": "0x49849C98ae39Fff122806C06791Fa73784FB3675",
+        "curve_renbtc_wbtc_pool": "0x93054188d876f558f4a66B2EF1d97d16eDf0895B"
     },
     "config": {
         "usdt_interest_rate_model":{
@@ -39,11 +44,24 @@
             "underlying": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
             "initial_exchange_rate_mantissa": "200000000000000"
         },
+        "ceth": {
+            "name": "Cham ETH",
+            "symbol": "cETH",
+            "decimals": 8,
+            "initial_exchange_rate_mantissa": "200000000000000"
+        },
         "csushi_weth_usdt_pair":{
             "name": "Cham Sushi WETH_USDT",
             "symbol": "cSushiWethUsdt",
             "decimals": 8,
             "underlying": "0x06da0fd433C1A5d7a4faa01111c044910A184553",
+            "initial_exchange_rate_mantissa": "200000000000000"
+        },
+        "ccurve_renbtc_wbtc": {
+            "name": "Cham Curve Renbtc/Wbtc",
+            "symbol": "cCurveRenWbtc",
+            "decimals": 8,
+            "underlying": "0x49849C98ae39Fff122806C06791Fa73784FB3675",
             "initial_exchange_rate_mantissa": "200000000000000"
         }
     }
