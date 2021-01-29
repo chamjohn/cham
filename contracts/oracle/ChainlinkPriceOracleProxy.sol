@@ -184,7 +184,7 @@ contract ChainlinkPriceOracleProxy is Ownable, PriceOracleInterface {
             uint256 root;
             {
             (uint112 reserve0, uint112 reserve1,) = pair.getReserves();
-            return 0;
+            
             address token0 = pair.token0();
             address token1 = pair.token1();
             uint256 price0 = getTokenPrice(token0);

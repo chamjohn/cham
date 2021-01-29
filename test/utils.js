@@ -6,6 +6,8 @@ const CErc20Delegate = artifacts.require("CErc20Delegate")
 const CErc20Delegator = artifacts.require("CErc20Delegator")
 const EIP20Interface = artifacts.require("EIP20Interface")
 const IUniswapV2Pair = artifacts.require("IUniswapV2Pair")
+const IWETH = artifacts.require("IWETH")
+
 
 const utils = require('../migrations/utils');
 const { time } = require('@openzeppelin/test-helpers');
@@ -19,6 +21,7 @@ async function getArtifacts(network) {
 
         const [oracle, controller, 
             usdt, cusdt,
+            weth, cweth,
             s_weth_usdt, cs_weth_usdt
         ] = await Promise.all([
             ChainlinkPriceOracleProxy.at(config[network].oracle),
@@ -26,6 +29,9 @@ async function getArtifacts(network) {
             
             EIP20Interface.at(dconfig[dnetwork].usdt),
             CErc20Delegate.at(config[network].cerc20_delegator_usdt),
+
+            IWETH.at(dconfig[dnetwork].weth),
+            CErc20Delegate.at(config[network].cerc20_delegator_weth),
 
             IUniswapV2Pair.at(dconfig[dnetwork].sushi_weth_usdt_pair),
             CErc20Delegate.at(config[network].cerc20_delegator_sushi_weth_usdt)
@@ -36,14 +42,11 @@ async function getArtifacts(network) {
             network,
             dnetwork,
 
-            oracle,
-            controller,
+            oracle, controller,
 
-            usdt,
-            cusdt,
+            usdt, cusdt,
 
-            weth,
-            cweth,
+            weth, cweth,
 
             s_weth_usdt,
             cs_weth_usdt
