@@ -68,4 +68,16 @@ contract ComptrollerInterface {
         address cTokenBorrowed,
         address cTokenCollateral,
         uint repayAmount) external view returns (uint, uint);
+    
+    /**** farm coin info ***/
+    function getFarmCoins(address cToken) external view returns (
+        uint coinBase,
+        uint farmRatio,
+        address vault
+    );
+    function getFarmBalance(address cToken) external view returns (
+        uint invested,
+        uint shares,
+        uint totalProfit
+    );
 }

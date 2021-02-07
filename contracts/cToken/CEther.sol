@@ -1,6 +1,8 @@
 pragma solidity ^0.5.16;
 
 import "./CToken.sol";
+import "../interfaces/IWETH.sol";
+import "../interfaces/IVault.sol";
 
 /**
  * @title Compound's CEther Contract
@@ -8,6 +10,7 @@ import "./CToken.sol";
  * @author Compound
  */
 contract CEther is CToken {
+    address public constant weth = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     /**
      * @notice Construct a new CEther money market
      * @param comptroller_ The address of the Comptroller
@@ -110,6 +113,9 @@ contract CEther is CToken {
      * @notice Send Ether to CEther to mint
      */
     function () external payable {
+        if (msg.sender == weth) {
+            return;
+        }
         (uint err,) = mintInternal(msg.value);
         requireNoError(err, "mint failed");
     }
@@ -124,7 +130,21 @@ contract CEther is CToken {
     function getCashPrior() internal view returns (uint) {
         (MathError err, uint startingBalance) = subUInt(address(this).balance, msg.value);
         require(err == MathError.NO_ERROR);
-        return startingBalance;
+        return add_(startingBalance, (getInvested()));
+    }
+    
+    function _depositInternalFresh(address vault, uint amount) internal returns (uint) {
+        IWETH(weth).deposit.value(amount)();
+        EIP20Interface(weth).approve(vault, 0);
+        EIP20Interface(weth).approve(vault, IWETH(weth).balanceOf(address(this)));
+        IVault(vault).deposit(amount);
+        return uint(Error.NO_ERROR);
+    }
+
+    function _withdrawInternalFresh(address vault, uint shares) internal returns (uint) {
+        IVault(vault).withdraw(shares);
+        IWETH(weth).withdraw(IWETH(weth).balanceOf(address(this)));
+        return uint(Error.NO_ERROR);
     }
 
     /**

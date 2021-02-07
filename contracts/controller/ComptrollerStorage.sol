@@ -137,3 +137,24 @@ contract ComptrollerV4Storage is ComptrollerV3Storage {
     // @notice Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing.
     mapping(address => uint) public borrowCaps;
 }
+
+contract ComptrollerV4_1Storage is ComptrollerV4Storage {
+    // 
+    struct FarmCoin {
+        uint coinBase;  // 1: base asset, 2: uniswap lp, 3: sushiswap lp, 4: curve lp
+        uint farmRatio; // scaled by 1e18
+        address vault;
+    }
+    /**
+     * @notice Official mapping of cTokens -> Underlying coin metadata
+     * @dev Used e.g. to determine how and how many the supplied underlying coin should be farmed
+     */
+    mapping(address => FarmCoin) public farmCoins;
+    
+    struct FarmBalance {
+        uint invested;
+        uint shares;
+        uint totalProfit;
+    }
+    mapping(address => FarmBalance) public farmBalances;
+}

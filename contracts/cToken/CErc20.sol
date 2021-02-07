@@ -1,6 +1,7 @@
 pragma solidity ^0.5.16;
 
 import "./CToken.sol";
+import "../interfaces/IVault.sol";
 
 /**
  * @title Compound's CErc20 Contract
@@ -127,7 +128,21 @@ contract CErc20 is CToken, CErc20Interface {
      */
     function getCashPrior() internal view returns (uint) {
         EIP20Interface token = EIP20Interface(underlying);
-        return token.balanceOf(address(this));
+        uint bal = token.balanceOf(address(this)); 
+        return add_(bal, getInvested());
+    }
+    
+    
+    function _depositInternalFresh(address vault, uint amount) internal returns (uint) {
+        EIP20Interface(vault).approve(vault, 0);
+        EIP20Interface(vault).approve(vault, amount);
+        IVault(vault).deposit(amount);
+        return uint(Error.NO_ERROR);
+    }
+
+    function _withdrawInternalFresh(address vault, uint shares) internal returns (uint) {
+        IVault(vault).withdraw(shares);
+        return uint(Error.NO_ERROR);
     }
 
     /**

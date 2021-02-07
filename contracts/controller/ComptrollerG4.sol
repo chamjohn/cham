@@ -13,7 +13,7 @@ import "../gov/Comp.sol";
  * @title Compound's Comptroller Contract
  * @author Compound
  */
-contract ComptrollerG4 is ComptrollerV3Storage, ComptrollerInterface, ComptrollerErrorReporter, Exponential {
+contract ComptrollerG4 is ComptrollerV4_1Storage, ComptrollerInterface, ComptrollerErrorReporter, Exponential {
     /// @notice Emitted when an admin supports a market
     event MarketListed(CToken cToken);
 
@@ -1384,4 +1384,45 @@ contract ComptrollerG4 is ComptrollerV3Storage, ComptrollerInterface, Comptrolle
         require(chamAddress == address(0), "can only be set once");
         chamAddress = addr;
     }
+
+    function getFarmCoin(address cToken) external view returns (
+        uint coinBase,
+        uint farmRatio,
+        address vault
+    ) {
+        FarmCoin memory fc = farmCoins[cToken];
+        (coinBase, farmRatio, vault) = (fc.coinBase, fc.farmRatio, fc.vault);
+    }
+
+    function getFarmBalance(address cToken) external view returns (
+        uint invested,
+        uint shares,
+        uint totalProfit
+    ) {
+        FarmBalance memory fb = farmBalances[cToken];
+        (invested, shares, totalProfit) = (fb.invested, fb.shares, fb.totalProfit);
+    }
+
+    function _addFarmCoin(address cToken, uint coinBase, uint farmRatio, address vault) public {
+        require(msg.sender == admin, "only admin can add FarmCoin");
+
+        require(farmRatio <= 1e18, "farmRatio too high");
+        
+        FarmCoin storage farmCoin = farmCoins[cToken];
+        farmCoin.coinBase = coinBase;
+        farmCoin.farmRatio = farmRatio;
+        farmCoin.vault = vault;
+    }
+
+    function _dropFarmCoin(address cToken) public {
+        require(msg.sender == admin, "only admin can drop FarmCoin");
+
+        require(farmCoins[cToken].coinBase > 0, "!enabled");
+        
+        FarmCoin storage farmCoin = farmCoins[cToken];
+        farmCoin.coinBase = 0;
+        farmCoin.farmRatio = 0;
+        farmCoin.vault = address(0);
+    }
+    
 }

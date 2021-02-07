@@ -58,6 +58,7 @@ contract('ControllerG4', (accounts) => {
             assert.equal(cusdtMarket.isComped, false)
         }
     });
+    
     it('should supply usdt successfully', async() => {
         await utils.swapEthTo(this, this.dconfig[this.dnetwork].usdt, toWei('0.1', 'ether'), accounts[0]);
         let usdtBalance = await this.usdt.balanceOf.call(accounts[0]);
@@ -69,6 +70,14 @@ contract('ControllerG4', (accounts) => {
         let cusdtBalance = await this.cusdt.balanceOf.call(accounts[0]);
         console.log("cusdt balance = ", cusdtBalance.toString());
 
+    });
+
+    it('should _setBorrowPaused(sushiLp, curveLp) successfully', async() => {
+        await this.controller._setBorrowPaused(this.cs_weth_usdt.address, true)
+        {
+            let paused = await this.controller.borrowGuardianPaused.call(this.cs_weth_usdt.address);
+            assert.equal(paused, true)
+        }
     });
 
 

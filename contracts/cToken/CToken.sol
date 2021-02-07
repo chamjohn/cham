@@ -6,6 +6,7 @@ import "../utils/ErrorReporter.sol";
 import "../utils/Exponential.sol";
 import "../interfaces/EIP20Interface.sol";
 import "../interfaces/EIP20NonStandardInterface.sol";
+import "../interfaces/IVault.sol";
 
 /**
  * @title Compound's CToken Contract
@@ -1390,6 +1391,68 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         return uint(Error.NO_ERROR);
     }
 
+
+    function _deposit() public returns (uint) {
+        uint error = accrueInterest();
+        if (error != uint(Error.NO_ERROR)) {
+            // accrueInterest emits logs on errors, but on top of that we want to log the fact that an attempted reduce reserves failed.
+            return fail(Error(error), FailureInfo.REDUCE_RESERVES_ACCRUE_INTEREST_FAILED);
+        }
+        // Check caller is admin
+        if (msg.sender != admin) {
+            return fail(Error.UNAUTHORIZED, FailureInfo.SET_INTEREST_RATE_MODEL_OWNER_CHECK);
+        }
+        // We fail gracefully unless market's block number equals current block number
+        if (accrualBlockNumber != getBlockNumber()) {
+            return fail(Error.MARKET_NOT_FRESH, FailureInfo.SET_INTEREST_RATE_MODEL_FRESH_CHECK);
+        }
+        (uint coinBase, uint farmRatio, address vault) = comptroller.getFarmCoins(address(this));
+        if (coinBase == 0 || farmRatio == 0) {
+            return 0;
+        }
+        uint cashPrior = getCashPrior();
+        (MathError mErr, uint amount) = mulScalarTruncate(Exp({mantissa: farmRatio}), cashPrior);
+        require(mErr == MathError.NO_ERROR, "deposit amount cannot be determined");
+        
+        return _depositInternalFresh(vault, amount);
+    }
+
+    function _depositInternalFresh(address vault, uint amount) internal returns (uint);
+
+    // safest way is to withdraw all even though may need higher gas 
+    function _withdraw() public returns (uint) {
+        uint error = accrueInterest();
+        if (error != uint(Error.NO_ERROR)) {
+            // accrueInterest emits logs on errors, but on top of that we want to log the fact that an attempted reduce reserves failed.
+            return fail(Error(error), FailureInfo.REDUCE_RESERVES_ACCRUE_INTEREST_FAILED);
+        }
+        // Check caller is admin
+        if (msg.sender != admin) {
+            return fail(Error.UNAUTHORIZED, FailureInfo.SET_INTEREST_RATE_MODEL_OWNER_CHECK);
+        }
+        // We fail gracefully unless market's block number equals current block number
+        if (accrualBlockNumber != getBlockNumber()) {
+            return fail(Error.MARKET_NOT_FRESH, FailureInfo.SET_INTEREST_RATE_MODEL_FRESH_CHECK);
+        }
+        
+        (uint coinBase, uint farmRatio, address vault) = comptroller.getFarmCoins(address(this));
+        if (coinBase == 0 || farmRatio == 0) {
+            return fail(Error.FARM_NOT_SUPPORTED, FailureInfo.SUPPORT_FARM_COIN_EXISTS);
+        }
+        uint shares = IVault(vault).balanceOf(address(this));
+        return _withdrawInternalFresh(vault, shares);
+    }
+
+    function _withdrawInternalFresh(address vault, uint shares) internal returns (uint);
+
+    function _rebaseInternal() public {
+        uint error = _deposit();
+        require(error == uint(Error.NO_ERROR), "_deposit fail");
+        
+        error = _withdraw();
+        require(error == uint(Error.NO_ERROR), "_withdraw fail");
+    }
+
     /*** Safe Token ***/
 
     /**
@@ -1398,6 +1461,10 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
      * @return The quantity of underlying owned by this contract
      */
     function getCashPrior() internal view returns (uint);
+    
+    function getInvested() internal view returns (uint invested) {
+        (invested, , ) = comptroller.getFarmBalance(address(this));
+    }
 
     /**
      * @dev Performs a transfer in, reverting upon failure. Returns the amount actually transferred to the protocol, in case of a fee.
