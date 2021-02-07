@@ -143,12 +143,20 @@ contract CEther is CToken {
         EIP20Interface(weth).approve(vault, 0);
         EIP20Interface(weth).approve(vault, IWETH(weth).balanceOf(address(this)));
         IVault(vault).deposit(amount);
+
         return uint(Error.NO_ERROR);
     }
 
     function _withdrawInternalFresh(address vault, uint shares) internal returns (uint) {
+        shares = Math.min(shares, IVault(vault).balanceOf(address(this)));
         IVault(vault).withdraw(shares);
-        IWETH(weth).withdraw(IWETH(weth).balanceOf(address(this)));
+        
+        uint weth_ = IWETH(weth).balanceOf(address(this));
+        EIP20NonStandardInterface(weth).approve(weth, 0);
+        EIP20NonStandardInterface(weth).approve(weth, weth_);
+        
+        IWETH(weth).withdraw(weth_);
+        
         return uint(Error.NO_ERROR);
     }
 
@@ -173,12 +181,8 @@ contract CEther is CToken {
             // withdraw (amount - availableCash) from vault
             uint pricePerShare = IVault(vault).getPricePerFullShare();
             uint shares = div_(mul_(sub_(amount, availableCash), 1e18), pricePerShare);
-            IVault(vault).withdraw(shares);
-            
-            uint weth_ = IWETH(weth).balanceOf(address(this));
-            EIP20NonStandardInterface(weth).approve(weth, 0);
-            EIP20NonStandardInterface(weth).approve(weth, weth_);
-            IWETH(weth).withdraw(weth_);
+
+            _withdrawInternalFresh(vault, shares);
             amount = Math.min(amount, getAavilableCashPrior());
         }
         /* Send the Ether, with minimal gas and revert on failure */

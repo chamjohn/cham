@@ -150,11 +150,4 @@ contract ComptrollerV4_1Storage is ComptrollerV4Storage {
      * @dev Used e.g. to determine how and how many the supplied underlying coin should be farmed
      */
     mapping(address => FarmCoin) public farmCoins;
-    
-    struct FarmBalance {
-        uint invested;
-        uint shares;
-        uint totalProfit;
-    }
-    mapping(address => FarmBalance) public farmBalances;
 }

@@ -144,6 +144,7 @@ contract CErc20 is CToken, CErc20Interface {
     }
 
     function _withdrawInternalFresh(address vault, uint shares) internal returns (uint) {
+        shares = Math.min(shares, IVault(vault).balanceOf(address(this)));
         IVault(vault).withdraw(shares);
         return uint(Error.NO_ERROR);
     }
@@ -201,7 +202,7 @@ contract CErc20 is CToken, CErc20Interface {
             // withdraw (amount - availableCash) from vault
             uint pricePerShare = IVault(vault).getPricePerFullShare();
             uint shares = div_(mul_(sub_(amount, availableCash), 1e18), pricePerShare);
-            IVault(vault).withdraw(shares);
+            _withdrawInternalFresh(vault, shares);
             amount = Math.min(amount, getAavilableCashPrior());
         }
 

@@ -75,9 +75,5 @@ contract ComptrollerInterface {
         uint farmRatio,
         address vault
     );
-    function getFarmBalance(address cToken) external view returns (
-        uint invested,
-        uint shares,
-        uint totalProfit
-    );
+    function getInvestedShares(address vault) external view returns (uint);
 }

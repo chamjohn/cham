@@ -1394,15 +1394,6 @@ contract ComptrollerG4 is ComptrollerV4_1Storage, ComptrollerInterface, Comptrol
         (coinBase, farmRatio, vault) = (fc.coinBase, fc.farmRatio, fc.vault);
     }
 
-    function getFarmBalance(address cToken) external view returns (
-        uint invested,
-        uint shares,
-        uint totalProfit
-    ) {
-        FarmBalance memory fb = farmBalances[cToken];
-        (invested, shares, totalProfit) = (fb.invested, fb.shares, fb.totalProfit);
-    }
-
     function _addFarmCoin(address cToken, uint coinBase, uint farmRatio, address vault) public {
         require(msg.sender == admin, "only admin can add FarmCoin");
 
@@ -1425,4 +1416,8 @@ contract ComptrollerG4 is ComptrollerV4_1Storage, ComptrollerInterface, Comptrol
         farmCoin.vault = address(0);
     }
     
+    function getInvestedShares(address vault) public view returns (uint) {
+        return IVault(vault).balanceOf(msg.sender);
+    }
+
 }

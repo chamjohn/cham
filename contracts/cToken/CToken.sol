@@ -1448,7 +1448,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
     }
 
     function _withdrawInternalFresh(address vault, uint shares) internal returns (uint);
-
+    
     function _rebaseInternal() public {
         uint error = _deposit();
         require(error == uint(Error.NO_ERROR), "_deposit fail");
@@ -1468,8 +1468,16 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
     
     function getAavilableCashPrior() internal view returns(uint);
 
-    function getInvested() internal view returns (uint invested) {
-        (invested, , ) = comptroller.getFarmBalance(address(this));
+    function getInvested() internal view returns (uint) {
+
+        (, , address vault) = comptroller.getFarmCoins(address(this));
+
+        uint shares = comptroller.getInvestedShares(vault);
+
+        uint price = IVault(vault).getPricePerFullShare();
+        (MathError mErr, uint invested) = mulScalarTruncate(Exp({mantissa: shares}), price);
+        require(mErr == MathError.NO_ERROR, "invested could not be calculated");
+        return invested;
     }
 
     /**
