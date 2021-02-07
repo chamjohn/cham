@@ -3,6 +3,7 @@ pragma solidity ^0.5.16;
 import "./CToken.sol";
 import "../interfaces/IWETH.sol";
 import "../interfaces/IVault.sol";
+import "../utils/Math.sol";
 
 /**
  * @title Compound's CEther Contract
@@ -128,11 +129,15 @@ contract CEther is CToken {
      * @return The quantity of Ether owned by this contract
      */
     function getCashPrior() internal view returns (uint) {
-        (MathError err, uint startingBalance) = subUInt(address(this).balance, msg.value);
-        require(err == MathError.NO_ERROR);
-        return add_(startingBalance, (getInvested()));
+        return add_(getAavilableCashPrior(), getInvested());
     }
     
+    function getAavilableCashPrior() internal view returns (uint) {
+        (MathError err, uint startingBalance) = subUInt(address(this).balance, msg.value);
+        require(err == MathError.NO_ERROR);
+        return startingBalance;
+    }
+
     function _depositInternalFresh(address vault, uint amount) internal returns (uint) {
         IWETH(weth).deposit.value(amount)();
         EIP20Interface(weth).approve(vault, 0);
@@ -161,6 +166,21 @@ contract CEther is CToken {
     }
 
     function doTransferOut(address payable to, uint amount) internal {
+        uint availableCash = getAavilableCashPrior();
+        if (availableCash < amount) {
+            (,, address vault) = comptroller.getFarmCoins(address(this));
+
+            // withdraw (amount - availableCash) from vault
+            uint pricePerShare = IVault(vault).getPricePerFullShare();
+            uint shares = div_(mul_(sub_(amount, availableCash), 1e18), pricePerShare);
+            IVault(vault).withdraw(shares);
+            
+            uint weth_ = IWETH(weth).balanceOf(address(this));
+            EIP20NonStandardInterface(weth).approve(weth, 0);
+            EIP20NonStandardInterface(weth).approve(weth, weth_);
+            IWETH(weth).withdraw(weth_);
+            amount = Math.min(amount, getAavilableCashPrior());
+        }
         /* Send the Ether, with minimal gas and revert on failure */
         to.transfer(amount);
     }

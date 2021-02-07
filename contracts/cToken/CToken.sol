@@ -376,6 +376,10 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         return getCashPrior();
     }
 
+    function getAvailableCash() external view returns (uint) {
+        return getAavilableCashPrior();
+    }
+
     /**
      * @notice Applies accrued interest to total borrows and reserves
      * @dev This calculates interest accrued from the last checkpointed block
@@ -1462,6 +1466,8 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
      */
     function getCashPrior() internal view returns (uint);
     
+    function getAavilableCashPrior() internal view returns(uint);
+
     function getInvested() internal view returns (uint invested) {
         (invested, , ) = comptroller.getFarmBalance(address(this));
     }

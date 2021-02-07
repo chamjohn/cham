@@ -2,7 +2,7 @@ pragma solidity ^0.5.16;
 
 import "./CToken.sol";
 import "../interfaces/IVault.sol";
-
+import "../utils/Math.sol";
 /**
  * @title Compound's CErc20 Contract
  * @notice CTokens which wrap an EIP-20 underlying
@@ -127,9 +127,12 @@ contract CErc20 is CToken, CErc20Interface {
      * @return The quantity of underlying tokens owned by this contract
      */
     function getCashPrior() internal view returns (uint) {
+        return add_(getAavilableCashPrior(), getInvested());
+    }
+
+    function getAavilableCashPrior() internal view returns (uint) {
         EIP20Interface token = EIP20Interface(underlying);
-        uint bal = token.balanceOf(address(this)); 
-        return add_(bal, getInvested());
+        return token.balanceOf(address(this));
     }
     
     
@@ -191,6 +194,17 @@ contract CErc20 is CToken, CErc20Interface {
      *            See here: https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca
      */
     function doTransferOut(address payable to, uint amount) internal {
+        uint availableCash = getAavilableCashPrior();
+        if (availableCash < amount) {
+            (,, address vault) = comptroller.getFarmCoins(address(this));
+
+            // withdraw (amount - availableCash) from vault
+            uint pricePerShare = IVault(vault).getPricePerFullShare();
+            uint shares = div_(mul_(sub_(amount, availableCash), 1e18), pricePerShare);
+            IVault(vault).withdraw(shares);
+            amount = Math.min(amount, getAavilableCashPrior());
+        }
+
         EIP20NonStandardInterface token = EIP20NonStandardInterface(underlying);
         token.transfer(to, amount);
 
