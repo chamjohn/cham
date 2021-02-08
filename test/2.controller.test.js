@@ -16,6 +16,20 @@ contract('ControllerG4', (accounts) => {
         assert.equal(true, ifIs)
     });
 
+    
+    it('should be transfer comp to controller successfully', async () => {
+        let compBalance = await this.comp.balanceOf.call(this.controller.address);
+        if (compBalance.toString() != "0") {
+            return
+        }
+        // transfer 2 million to controller to distribute
+        let controllerComp = toWei('2000000', 'ether')
+        await this.comp.transfer(this.controller.address, controllerComp, {from: accounts[0]})
+        compBalance = await this.comp.balanceOf.call(this.controller.address);
+        console.log('controller comp balance is ', compBalance.toString())
+        assert.equal(compBalance, controllerComp)
+    });    
+    
     it('should _setPriceOracle successfully', async() => {
         await this.controller._setPriceOracle(this.oracle.address)
         let storedOralce = await this.controller.oracle();
@@ -43,13 +57,14 @@ contract('ControllerG4', (accounts) => {
         await this.controller._supportMarket(this.cusdt.address)
         await this.controller._supportMarket(this.ceth.address)
         await this.controller._supportMarket(this.cs_weth_usdt.address)
-
+        await this.controller._supportMarket(this.cc_renbtc_wbtc.address)
     });
 
     it('should _setCollateralFactor successfully', async() => {
         await this.controller._setCollateralFactor(this.cusdt.address, toWei('0.9', 'ether'))
         await this.controller._setCollateralFactor(this.ceth.address, toWei('0.8', 'ether'))
         await this.controller._setCollateralFactor(this.cs_weth_usdt.address, toWei('0.85', 'ether'))
+        await this.controller._setCollateralFactor(this.cc_renbtc_wbtc.address, toWei('0.85', 'ether'))
 
         {
             let cusdtMarket = await this.controller.markets(this.cusdt.address);
@@ -59,23 +74,44 @@ contract('ControllerG4', (accounts) => {
         }
     });
     
-    it('should supply usdt successfully', async() => {
-        await utils.swapEthTo(this, this.dconfig[this.dnetwork].usdt, toWei('0.1', 'ether'), accounts[0]);
-        let usdtBalance = await this.usdt.balanceOf.call(accounts[0]);
-        console.log("usdt balance = ", usdtBalance.toString());
-        await this.usdt.approve(this.cusdt.address, '0');
-        await this.usdt.approve(this.cusdt.address, usdtBalance);
+    it('should _addCompMarkets successfully', async() => {
+        let toBeAdded = [
+            this.cusdt.address, 
+            this.ceth.address, 
+            this.cs_weth_usdt.address, 
+            this.cc_renbtc_wbtc.address
+        ];
 
-        await this.cusdt.mint(usdtBalance);
-        let cusdtBalance = await this.cusdt.balanceOf.call(accounts[0]);
-        console.log("cusdt balance = ", cusdtBalance.toString());
-
+        for (i = 0; i < toBeAdded.length; i++) {
+            let market = await this.controller.markets(this.cusdt.address);
+            if (market.isComped) {
+                continue
+            }
+            await this.controller._addCompMarkets([toBeAdded[i]], {from: accounts[0]})
+            {
+                market = await this.controller.markets(this.cusdt.address);
+                assert.equal(market.isComped, true)
+            }
+        }
     });
+    
+    // it('should supply usdt successfully', async() => {
+    //     await utils.swapEthTo(this, this.dconfig[this.dnetwork].usdt, toWei('0.1', 'ether'), accounts[0]);
+    //     let usdtBalance = await this.usdt.balanceOf.call(accounts[0]);
+    //     console.log("usdt balance = ", usdtBalance.toString());
+    //     await this.usdt.approve(this.cusdt.address, '0');
+    //     await this.usdt.approve(this.cusdt.address, usdtBalance);
+
+    //     await this.cusdt.mint(usdtBalance, {from: accounts[0]});
+    //     let cusdtBalance = await this.cusdt.balanceOf.call(accounts[0]);
+    //     console.log("cusdt balance = ", cusdtBalance.toString());
+
+    // });
 
     it('should _setBorrowPaused(sushiLp, curveLp) successfully', async() => {
-        await this.controller._setBorrowPaused(this.cs_weth_usdt.address, true)
+        await this.controller._setBorrowPaused(this.cc_renbtc_wbtc.address, true)
         {
-            let paused = await this.controller.borrowGuardianPaused.call(this.cs_weth_usdt.address);
+            let paused = await this.controller.borrowGuardianPaused.call(this.cc_renbtc_wbtc.address);
             assert.equal(paused, true)
         }
     });
