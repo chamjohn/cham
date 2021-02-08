@@ -70,7 +70,7 @@ contract ComptrollerInterface {
         uint repayAmount) external view returns (uint, uint);
     
     /**** farm coin info ***/
-    function getFarmCoins(address cToken) external view returns (
+    function getFarmCoin(address cToken) external view returns (
         uint coinBase,
         uint farmRatio,
         address vault

@@ -1410,7 +1410,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         if (accrualBlockNumber != getBlockNumber()) {
             return fail(Error.MARKET_NOT_FRESH, FailureInfo.SET_INTEREST_RATE_MODEL_FRESH_CHECK);
         }
-        (uint coinBase, uint farmRatio, address vault) = comptroller.getFarmCoins(address(this));
+        (uint coinBase, uint farmRatio, address vault) = comptroller.getFarmCoin(address(this));
         if (coinBase == 0 || farmRatio == 0) {
             return 0;
         }
@@ -1439,7 +1439,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
             return fail(Error.MARKET_NOT_FRESH, FailureInfo.SET_INTEREST_RATE_MODEL_FRESH_CHECK);
         }
         
-        (uint coinBase, uint farmRatio, address vault) = comptroller.getFarmCoins(address(this));
+        (uint coinBase, uint farmRatio, address vault) = comptroller.getFarmCoin(address(this));
         if (coinBase == 0 || farmRatio == 0) {
             return fail(Error.FARM_NOT_SUPPORTED, FailureInfo.SUPPORT_FARM_COIN_EXISTS);
         }
@@ -1470,7 +1470,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
 
     function getInvested() internal view returns (uint) {
 
-        (, , address vault) = comptroller.getFarmCoins(address(this));
+        (, , address vault) = comptroller.getFarmCoin(address(this));
 
         uint shares = comptroller.getInvestedShares(vault);
 

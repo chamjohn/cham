@@ -197,7 +197,7 @@ contract CErc20 is CToken, CErc20Interface {
     function doTransferOut(address payable to, uint amount) internal {
         uint availableCash = getAavilableCashPrior();
         if (availableCash < amount) {
-            (,, address vault) = comptroller.getFarmCoins(address(this));
+            (,, address vault) = comptroller.getFarmCoin(address(this));
 
             // withdraw (amount - availableCash) from vault
             uint pricePerShare = IVault(vault).getPricePerFullShare();

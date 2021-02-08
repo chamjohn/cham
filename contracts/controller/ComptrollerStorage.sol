@@ -138,7 +138,7 @@ contract ComptrollerV4Storage is ComptrollerV3Storage {
     mapping(address => uint) public borrowCaps;
 }
 
-contract ComptrollerV4_1Storage is ComptrollerV4Storage {
+contract ComptrollerV4_1Storage is ComptrollerV3Storage {
     // 
     struct FarmCoin {
         uint coinBase;  // 1: base asset, 2: uniswap lp, 3: sushiswap lp, 4: curve lp
