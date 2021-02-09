@@ -74,6 +74,7 @@ contract('ControllerG4', (accounts) => {
         }
     });
     
+    // enable comp distribution
     it('should _addCompMarkets successfully', async() => {
         let toBeAdded = [
             this.cusdt.address, 
@@ -94,7 +95,15 @@ contract('ControllerG4', (accounts) => {
             }
         }
     });
-    
+    // TODO: set comp distribution rate
+    it('should _addCompMarkets successfully', async() => {
+        let compRate = await this.controller.compRate.call();
+        if (compRate.toString() == "0") {
+            await this.controller._setCompRate(toWei('10', 'ether'), {from: accounts[0]})
+        }
+        console.log("compRate: ", (await this.controller.compRate.call()).toString())
+        
+    });
     
 
     it('should _setBorrowPaused(sushiLp, curveLp) successfully', async() => {
