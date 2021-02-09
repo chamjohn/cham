@@ -76,7 +76,21 @@ contract('CToken', (accounts) => {
         console.log("cusdt balance = ", cusdtBalance.toString());
 
     });
-    
+    it('should redeem usdt successfully', async() => {
+        let cusdtBalance = await this.cusdt.balanceOf(accounts[0]);
+        console.log("cusdt balance: ", cusdtBalance.toString());
+        console.log(" usdt balance: ", (await this.usdt.balanceOf(accounts[0])).toString())
+        if (cusdtBalance.toString() == "0") {
+            console.log('redeem: zero cusdt balance')
+            return
+        }
+
+        await this.cusdt.redeem(cusdtBalance, {from: accounts[0]});
+        cusdtBalance = await this.cusdt.balanceOf(accounts[0]);
+        console.log("cusdt balance: ", cusdtBalance.toString());
+        console.log(" usdt balance: ", (await this.usdt.balanceOf(accounts[0])).toString())
+
+    });
 
 
 });

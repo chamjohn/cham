@@ -46,10 +46,10 @@ async function getArtifacts(network) {
             CEther.at(config[network].cether),
 
             IUniswapV2Pair.at(dconfig[dnetwork].sushi_weth_usdt_pair),
-            CErc20Delegate.at(config[network].cerc20_delegator_sushi_weth_usdt),
+            CErc20Delegator.at(config[network].cerc20_delegator_sushi_weth_usdt),
 
             EIP20Interface.at(dconfig[dnetwork].curve_renbtc_wbtc_token),
-            CErc20Delegate.at(config[network].cerc20_delegator_curve_renbtc_wbtc)
+            CErc20Delegator.at(config[network].cerc20_delegator_curve_renbtc_wbtc)
 
         ]);
         res = {
