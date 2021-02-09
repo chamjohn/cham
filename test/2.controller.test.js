@@ -95,18 +95,7 @@ contract('ControllerG4', (accounts) => {
         }
     });
     
-    // it('should supply usdt successfully', async() => {
-    //     await utils.swapEthTo(this, this.dconfig[this.dnetwork].usdt, toWei('0.1', 'ether'), accounts[0]);
-    //     let usdtBalance = await this.usdt.balanceOf.call(accounts[0]);
-    //     console.log("usdt balance = ", usdtBalance.toString());
-    //     await this.usdt.approve(this.cusdt.address, '0');
-    //     await this.usdt.approve(this.cusdt.address, usdtBalance);
-
-    //     await this.cusdt.mint(usdtBalance, {from: accounts[0]});
-    //     let cusdtBalance = await this.cusdt.balanceOf.call(accounts[0]);
-    //     console.log("cusdt balance = ", cusdtBalance.toString());
-
-    // });
+    
 
     it('should _setBorrowPaused(sushiLp, curveLp) successfully', async() => {
         await this.controller._setBorrowPaused(this.cc_renbtc_wbtc.address, true)

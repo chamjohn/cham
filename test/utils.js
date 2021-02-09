@@ -10,6 +10,7 @@ const IUniswapV2Pair = artifacts.require("IUniswapV2Pair")
 const IWETH = artifacts.require("IWETH")
 const Comp = artifacts.require("Comp")
 const IUniswapV2Router02 = artifacts.require("IUniswapV2Router02")
+const JumpRateModelV2 = artifacts.require("JumpRateModelV2")
 
 
 const utils = require('../migrations/utils');
@@ -26,7 +27,7 @@ async function getArtifacts(network) {
             sushi_router,
 
             oracle, controller, comp, 
-            usdt, cusdt,
+            usdt, cusdt, usdt_interest_model,
             weth, ceth,
             s_weth_usdt, cs_weth_usdt,
             c_renbtc_wbtc, cc_renbtc_wbtc
@@ -36,9 +37,10 @@ async function getArtifacts(network) {
             ChainlinkPriceOracleProxy.at(config[network].oracle),
             ComptrollerG4.at(config[network].unitroller),
             Comp.at(config[network].comp),
-            
+
             EIP20Interface.at(dconfig[dnetwork].usdt),
-            CErc20Delegate.at(config[network].cerc20_delegator_usdt),
+            CErc20Delegator.at(config[network].cerc20_delegator_usdt),
+            JumpRateModelV2.at(config[network].usdt_interest_rate_model.address),
 
             IWETH.at(dconfig[dnetwork].weth),
             CEther.at(config[network].cether),
@@ -59,7 +61,7 @@ async function getArtifacts(network) {
 
             oracle, controller, comp, 
 
-            usdt, cusdt,
+            usdt, cusdt, usdt_interest_model,
 
             weth, ceth,
 
@@ -83,6 +85,7 @@ async function swapEthTo(T, to, amount, account) {
     let weth = T.weth;
     let sushi_router = T.sushi_router;
     console.log("sushi_router ", sushi_router.address)
+    console.log("account: ", account);
     await weth.deposit({from: account, value: amount})
 
     await weth.approve(sushi_router.address, amount, {from: account});

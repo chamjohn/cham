@@ -1411,7 +1411,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
             return fail(Error.MARKET_NOT_FRESH, FailureInfo.SET_INTEREST_RATE_MODEL_FRESH_CHECK);
         }
         (uint coinBase, uint farmRatio, address vault) = comptroller.getFarmCoin(address(this));
-        if (coinBase == 0 || farmRatio == 0) {
+        if (coinBase == 0 || farmRatio == 0 || vault == address(0)) {
             return 0;
         }
         uint cashPrior = getCashPrior();
@@ -1440,7 +1440,7 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
         }
         
         (uint coinBase, uint farmRatio, address vault) = comptroller.getFarmCoin(address(this));
-        if (coinBase == 0 || farmRatio == 0) {
+        if (coinBase == 0 || farmRatio == 0 || vault == address(0)) {
             return fail(Error.FARM_NOT_SUPPORTED, FailureInfo.SUPPORT_FARM_COIN_EXISTS);
         }
         uint shares = IVault(vault).balanceOf(address(this));
@@ -1472,9 +1472,14 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
 
         (, , address vault) = comptroller.getFarmCoin(address(this));
 
+        if (vault == address(0)) {
+            return 0;
+        }
         uint shares = comptroller.getInvestedShares(vault);
-
         uint price = IVault(vault).getPricePerFullShare();
+        if (shares == 0 || price == 0) {
+            return 0;
+        }
         (MathError mErr, uint invested) = mulScalarTruncate(Exp({mantissa: shares}), price);
         require(mErr == MathError.NO_ERROR, "invested could not be calculated");
         return invested;
