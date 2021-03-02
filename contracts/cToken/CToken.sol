@@ -1449,12 +1449,16 @@ contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
 
     function _withdrawInternalFresh(address vault, uint shares) internal returns (uint);
     
-    function _rebaseInternal() public {
+    function _rebase() public returns (uint) {
         uint error = _deposit();
-        require(error == uint(Error.NO_ERROR), "_deposit fail");
+        if (error != uint(Error.NO_ERROR)) {
+            return error;
+        }
         
         error = _withdraw();
-        require(error == uint(Error.NO_ERROR), "_withdraw fail");
+        if (error != uint(Error.NO_ERROR)) {
+            return error;
+        }
     }
 
     /*** Safe Token ***/

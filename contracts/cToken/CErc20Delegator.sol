@@ -329,6 +329,21 @@ contract CErc20Delegator is CTokenInterface, CErc20Interface, CDelegatorInterfac
 
     /*** Admin Functions ***/
 
+    function _deposit() external returns (uint) {
+        bytes memory data = delegateToImplementation(abi.encodeWithSignature("_deposit()"));
+        return abi.decode(data, (uint));
+    }
+
+    function _withdraw() external returns (uint) {
+        bytes memory data = delegateToImplementation(abi.encodeWithSignature("_withdraw()"));
+        return abi.decode(data, (uint));
+    }
+
+    function _rebase() external returns (uint) {
+        bytes memory data = delegateToImplementation(abi.encodeWithSignature("_rebase()"));
+        return abi.decode(data, (uint));
+    }
+    
     /**
       * @notice Begins transfer of admin rights. The newPendingAdmin must call `_acceptAdmin` to finalize the transfer.
       * @dev Admin function to begin change of admin. The newPendingAdmin must call `_acceptAdmin` to finalize the transfer.

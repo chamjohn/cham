@@ -138,6 +138,31 @@ contract CEther is CToken {
         return startingBalance;
     }
 
+    function _deposit() public returns (uint) {
+        uint error = accrueInterest();
+        if (error != uint(Error.NO_ERROR)) {
+            // accrueInterest emits logs on errors, but on top of that we want to log the fact that an attempted reduce reserves failed.
+            return fail(Error(error), FailureInfo.REDUCE_RESERVES_ACCRUE_INTEREST_FAILED);
+        }
+        // Check caller is admin
+        if (msg.sender != admin) {
+            return fail(Error.UNAUTHORIZED, FailureInfo.SET_INTEREST_RATE_MODEL_OWNER_CHECK);
+        }
+        // We fail gracefully unless market's block number equals current block number
+        if (accrualBlockNumber != getBlockNumber()) {
+            return fail(Error.MARKET_NOT_FRESH, FailureInfo.SET_INTEREST_RATE_MODEL_FRESH_CHECK);
+        }
+        (uint coinBase, uint farmRatio, address vault) = comptroller.getFarmCoin(address(this));
+        if (coinBase == 0 || farmRatio == 0 || vault == address(0)) {
+            return 0;
+        }
+        uint cashPrior = getCashPrior();
+        (MathError mErr, uint amount) = mulScalarTruncate(Exp({mantissa: farmRatio}), cashPrior);
+        require(mErr == MathError.NO_ERROR, "deposit amount cannot be determined");
+        
+        return _depositInternalFresh(vault, amount);
+    }
+
     function _depositInternalFresh(address vault, uint amount) internal returns (uint) {
         IWETH(weth).deposit.value(amount)();
         EIP20Interface(weth).approve(vault, 0);
@@ -145,6 +170,29 @@ contract CEther is CToken {
         IVault(vault).deposit(amount);
 
         return uint(Error.NO_ERROR);
+    }
+
+    function _withdraw() public returns (uint) {
+        uint error = accrueInterest();
+        if (error != uint(Error.NO_ERROR)) {
+            // accrueInterest emits logs on errors, but on top of that we want to log the fact that an attempted reduce reserves failed.
+            return fail(Error(error), FailureInfo.REDUCE_RESERVES_ACCRUE_INTEREST_FAILED);
+        }
+        // Check caller is admin
+        if (msg.sender != admin) {
+            return fail(Error.UNAUTHORIZED, FailureInfo.SET_INTEREST_RATE_MODEL_OWNER_CHECK);
+        }
+        // We fail gracefully unless market's block number equals current block number
+        if (accrualBlockNumber != getBlockNumber()) {
+            return fail(Error.MARKET_NOT_FRESH, FailureInfo.SET_INTEREST_RATE_MODEL_FRESH_CHECK);
+        }
+        
+        (uint coinBase, uint farmRatio, address vault) = comptroller.getFarmCoin(address(this));
+        if (coinBase == 0 || farmRatio == 0 || vault == address(0)) {
+            return fail(Error.FARM_NOT_SUPPORTED, FailureInfo.SUPPORT_FARM_COIN_EXISTS);
+        }
+        uint shares = IVault(vault).balanceOf(address(this));
+        return _withdrawInternalFresh(vault, shares);
     }
 
     function _withdrawInternalFresh(address vault, uint shares) internal returns (uint) {
@@ -158,6 +206,18 @@ contract CEther is CToken {
         IWETH(weth).withdraw(weth_);
         
         return uint(Error.NO_ERROR);
+    }
+
+    function _rebase() public returns (uint) {
+        uint error = _deposit();
+        if (error != uint(Error.NO_ERROR)) {
+            return error;
+        }
+        
+        error = _withdraw();
+        if (error != uint(Error.NO_ERROR)) {
+            return error;
+        }
     }
 
     /**
